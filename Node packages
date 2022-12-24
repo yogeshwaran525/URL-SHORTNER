@@ -1,0 +1,18 @@
+install Node JS Pacakages 
+
+npm init -y
+npm install --save express
+npm install --save mysql
+
+
+
+If causing any errors like the port is already in use
+use Node JS package
+npm kill-port portnumber(example:8080)
+
+If causing any errors like Access-Control-Allow-Origin
+CORS Policy error
+
+
+npm install cors;
+
