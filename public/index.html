@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL SHORTNER</title>
+    
+</head>
+<body>
+    <style>
+        *{
+            margin: 0%;
+            padding: 0%;
+            box-sizing: border-box;
+        }
+        body{
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            background-color:  #08a4e2;
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        body::-ms-overflow-style{
+            display: none;  
+            scrollbar-width: none; 
+        }
+        .header{
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            text-transform: uppercase;
+            text-align: center;
+            font-size: 2rem;
+            background: #159ed4;
+            color: #000000;
+            box-shadow: 3px 3px 1px #98a4a8;
+        }
+        a:link{
+            text-decoration: none;
+
+        }
+        .sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
+        .form-element{
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            margin: 2% auto;
+        }  
+        label{
+            font-size: 2rem;
+        }
+        [type="text"]:focus,
+        [type="text"]:active{
+            border-color: transparent;
+            border: 2px solid #18d9e0;
+            outline: none;
+        }
+        [type="text"]{
+            width: 500px;
+            height: 30px;
+            background: rgb(28, 212, 197);
+            border: 1px solid rgb(57, 241, 11);
+            border-radius: 4px;
+            box-shadow: 3px 3px 1px rgb(8, 164, 226);
+            cursor: text;
+        }
+        [placeholder]{
+            text-align: center;
+            color: black;
+            font-size: 0.9rem;
+        }
+        [type="submit"]{
+            width: 90px;
+            height: 30px;
+            text-align: center;
+            background: rgb(28, 212, 197);
+            border: 1px solid rgb(57, 241, 11);
+            border-radius: 4px;
+            box-shadow: 3px 3px 1px rgb(8, 164, 226);
+            cursor: pointer;
+        }
+        [type="submit"]:hover,[type="text"]:hover{            
+            background: #14da77;     
+            border:2px solid #39f10b;       
+        }
+
+       .result{
+            padding: 10px;
+            font-size: 1.3rem;
+            color: #0bb161;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+       .list{
+            width: 800px;
+            margin: 1% auto;
+        }
+        .list h1{
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        .list table{          
+            width: 100%;
+            text-align: center;
+            border: 2px solid blue;
+        }
+        .list table thead {
+            text-align: center;
+            height: 50px;
+            padding: 35px;
+            background-color: antiquewhite;
+            color: rgb(0, 0, 0);
+            font-size: 1rem;
+        }
+        .list table tbody tr td{
+            color: #000000;
+            font-size: 1.1rem;
+        }
+    
+        .list table thead tr td,
+        .list table tbody tr td{
+            padding: 5px;
+        }
+        .list table tbody tr:nth-child(odd){
+            background-color: #eee;
+        }
+        .list table tbody tr:nth-child(even){
+            /* background-color: rgb(24, 216, 56); */
+            background: rgb(137, 235, 26);
+        }
+      
+    </style>
+    
+        </head>
+        <body>
+            <div class="header" id="header"><a href="#">Url Shortner</a></div>
+                    <form class="form-element" id="form-element" >
+                        <label for="longurl">Enter Link</label>
+                        <input type="text" id="longurl" placeholder="http://site.com" >
+                        <input type="submit" id="create-short-url" value="Createurl">
+                    </form>                   
+                    <div class="result">
+                        <a href="#" id="short-url" target="_blank"></a>
+                    </div>
+            <div class="list">
+                <h1>Shorten Links</h1>
+                <table id="list_urls">
+                    <thead>
+                        <tr>                            
+                            <th>ID.NO</th>
+                            <th>LongURL</th>                            
+                            <th>ShortURL</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>                       
+                    <!--<tr>                   
+                            <td><td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        -->                        
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="h3"></h3>
+
+            <script type="text/javascript">
+                
+                const host = "http://localhost:5000/";
+
+                const form = document.getElementById("form-element")
+                form.addEventListener('submit', (e) => {
+
+                    e.preventDefault();
+
+                    let longurl = document.querySelector("#longurl").value.trim();
+                    if(longurl.length == 0){
+                        alert("Enter valid url");
+                        return;
+                    } else if(!(longurl.startsWith("http://") || longurl.startsWith("https://"))){
+                        alert("Enter valid link");
+                        return;
+                    }
+                    fetch(host+"api/create-short-url",{	method:"POST",
+				            body:JSON.stringify({
+					        longurl:longurl
+				}),
+				headers:{
+					"Content-type":"application/json; charset=UTF-8"
+				}
+			}).then(function(response){
+				return response.json();
+			}).then(function(data){
+				if(data.status == "ok"){
+                    document.querySelector("#short-url").innerText = host + data.shorturlid;
+                    document.querySelector("#short-url").href = host + data.shorturlid;
+                   let html = ` <tr>
+                                    <td>${longurl}</td>
+                                    <td>${host}${data.shorturlid}</td>                                   
+                                </tr>
+                                `;
+                                document.querySelector("#list_urls tbody").innerHTML += html;
+                }
+                urlfunction(data)
+
+			}).catch(function(error){
+				alert("Something went wrong");
+			})
+		    });
+        
+            function urlfunction(data){
+
+			fetch(host+"api/get-all-short-urls").then(function(response){
+				return response.json();
+			}).then(function(data){               
+                let html = "";
+                            for(let i=0;i<data.length;i++){                             
+                                html += `
+                                    <tr>
+                                        <td>${data[i].id}</td>
+                                        <td>${data[i].longurl}</td>
+                                        <td id="shorturlc"><a href="${host}${data[i].shorturlid}"target="_blank">${host}${data[i].shorturlid}</a></td>   
+                                                                                  
+                                    </tr>   ` ;                                                         
+                            }   
+                            document.querySelector("#list_urls tbody").innerHTML = html;
+                    }).catch(function(error){
+                        alert("Something Went wrong tbody")
+                    })       
+        }   
+        
+        
+    window.onscroll = function() {
+        myFunction()
+    };
+
+    var header = document.getElementById("header");
+    var sticky = header.offsetTop;
+
+    function myFunction() {
+    if (window.pageYOffset > sticky) {
+        header.classList.add("sticky");
+    } else {
+        header.classList.remove("sticky");
+    }
+    }  
+            </script>
+</body>
+</html>
+<!-- <td><input type="button" id="copy-button" value="Copy"></td>    -->
